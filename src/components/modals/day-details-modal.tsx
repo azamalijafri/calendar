@@ -47,7 +47,7 @@ const DayDetailsModal = () => {
             <div>
               <Button
                 onClick={() =>
-                  openModal("add-event", { date: modal?.data?.date })
+                  openModal("upsert-event", { date: modal?.data?.date })
                 }
               >
                 Add Event
@@ -64,7 +64,12 @@ const DayDetailsModal = () => {
                     key={event.id}
                     className="rounded-md px-4 py-2 bg-primary text-white flex justify-between items-center"
                   >
-                    <span className="cursor-pointer text-sm hover:underline hover:underline-offset-2 transition">
+                    <span
+                      onClick={() =>
+                        openModal("event-details", { eventId: event.id })
+                      }
+                      className="cursor-pointer text-sm hover:underline hover:underline-offset-2 transition"
+                    >
                       {event.title}
                     </span>
                     <div className="flex gap-x-4">
@@ -74,7 +79,12 @@ const DayDetailsModal = () => {
                         }
                         className="size-4 cursor-pointer"
                       />
-                      <Pencil className="size-4 cursor-pointer" />
+                      <Pencil
+                        onClick={() => {
+                          openModal("upsert-event", { eventId: event?.id });
+                        }}
+                        className="size-4 cursor-pointer"
+                      />
                     </div>
                   </div>
                 ))}

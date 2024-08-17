@@ -1,7 +1,12 @@
 import { Dayjs } from "dayjs";
 import { create } from "zustand";
 
-type ModalType = "day-details" | "confirm" | "add-event" | null;
+type ModalType =
+  | "day-details"
+  | "confirm"
+  | "upsert-event"
+  | "event-details"
+  | null;
 type ModalData = {
   date?: Dayjs;
   eventId?: string;

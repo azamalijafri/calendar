@@ -38,10 +38,10 @@ const ConfirmModal = () => {
   return (
     <Dialog open={!!modal} onOpenChange={closeModal}>
       <DialogContent>
-        <DialogDescription className="text-lg font-medium text-primary mt-4">
+        <DialogDescription className="text-base md:text-lg font-medium text-primary mt-4">
           Are you sure you want to perform this action?
         </DialogDescription>
-        <DialogFooter className="mx-auto flex gap-x-4">
+        <DialogFooter className="mx-auto flex flex-col md:flex-row gap-x-4 gap-y-2">
           <Button onClick={handleDelete}>Confirm</Button>
           <Button variant={"outline"} onClick={closeModal}>
             Cancel

@@ -25,16 +25,18 @@ const eventTypes = [
 
 const UpsertEventModal = () => {
   const { modals, closeModal } = useModal();
-  const { addEvent } = useEvent();
+  const { addEvent, getEvent, updateEvent } = useEvent();
 
   const { toast } = useToast();
 
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [category, setCategory] = useState<string>("work");
+  const modal = modals.find((modal) => modal.type == "upsert-event");
+  const event = modal?.data?.eventId ? getEvent(modal?.data?.eventId) : null;
 
-  const modal = modals.find((modal) => modal.type == "day-details");
-  const date = modal?.data?.date;
+  const [title, setTitle] = useState<string>(event?.title ?? "");
+  const [description, setDescription] = useState(event?.description ?? "");
+  const [category, setCategory] = useState<string>(event?.category ?? "work");
+
+  const date = event?.date ?? modal?.data?.date;
 
   const handleAdd = () => {
     if (!title)
@@ -43,11 +45,25 @@ const UpsertEventModal = () => {
         description: "title is required",
         variant: "destructive",
       });
+
+    const iEvent = {
+      id: event?.id ?? uuidv4(),
+      title,
+      description,
+      category,
+      date: date!,
+    };
     try {
-      addEvent({ id: uuidv4(), title, description, category, date: date! });
+      if (event) {
+        updateEvent(event?.id, iEvent);
+      } else {
+        addEvent(iEvent);
+      }
       toast({
         title: "Request Success",
-        description: "event has been added successfully",
+        description: `event has been ${
+          event ? "updated" : "added"
+        } successfully`,
       });
       closeModal();
     } catch (error: any) {
@@ -64,7 +80,9 @@ const UpsertEventModal = () => {
   return (
     <Dialog open={!!modal} onOpenChange={closeModal}>
       <DialogContent>
-        <DialogTitle className="font-semibold text-xl">Add Event</DialogTitle>
+        <DialogTitle className="font-semibold text-xl">
+          {event ? "Update" : "Add"} Event
+        </DialogTitle>
 
         <div className="flex flex-col gap-y-6">
           <div className="flex flex-col gap-y-2">
@@ -118,7 +136,7 @@ const UpsertEventModal = () => {
           </div>
         </div>
         <DialogFooter>
-          <Button onClick={handleAdd}>Add</Button>
+          <Button onClick={handleAdd}>{event ? "Update" : "Add"}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

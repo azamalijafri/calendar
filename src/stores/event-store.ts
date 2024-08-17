@@ -1,7 +1,7 @@
 import { Dayjs } from "dayjs";
 import { create } from "zustand";
 
-interface Event {
+export interface Event {
   id: string;
   title: string;
   date: Dayjs;
@@ -15,6 +15,7 @@ interface Store {
   updateEvent: (id: string, updatedEvent: Partial<Event>) => void;
   deleteEvent: (id: string) => void;
   setEvents: (events: Event[]) => void;
+  getEvent: (id: string) => Event | undefined;
 }
 
 const saveEventsToLocalStorage = (events: Event[]) => {
@@ -26,30 +27,30 @@ const loadEventsFromLocalStorage = (): Event[] => {
   return events ? JSON.parse(events) : [];
 };
 
-export const useEvent = create<Store>((set) => ({
+export const useEvent = create<Store>((set, get) => ({
   events: loadEventsFromLocalStorage(),
-  addEvent: (event) =>
-    set((state) => {
-      const updatedEvents = [...state.events, event];
-      saveEventsToLocalStorage(updatedEvents);
-      return { events: updatedEvents };
-    }),
-  updateEvent: (id, updatedEvent) =>
-    set((state) => {
-      const updatedEvents = state.events.map((event) =>
-        event.id === id ? { ...event, ...updatedEvent } : event
-      );
-      saveEventsToLocalStorage(updatedEvents);
-      return { events: updatedEvents };
-    }),
-  deleteEvent: (id) =>
-    set((state) => {
-      const updatedEvents = state.events.filter((event) => event.id !== id);
-      saveEventsToLocalStorage(updatedEvents);
-      return { events: updatedEvents };
-    }),
+  addEvent: (event) => {
+    const updatedEvents = [...get().events, event];
+    saveEventsToLocalStorage(updatedEvents);
+    set({ events: updatedEvents });
+  },
+  updateEvent: (id, updatedEvent) => {
+    const updatedEvents = get().events.map((event) =>
+      event.id === id ? { ...event, ...updatedEvent } : event
+    );
+    saveEventsToLocalStorage(updatedEvents);
+    set({ events: updatedEvents });
+  },
+  deleteEvent: (id) => {
+    const updatedEvents = get().events.filter((event) => event.id !== id);
+    saveEventsToLocalStorage(updatedEvents);
+    set({ events: updatedEvents });
+  },
   setEvents: (events) => {
     saveEventsToLocalStorage(events);
-    return { events };
+    set({ events });
+  },
+  getEvent: (id) => {
+    return get().events.find((event) => event.id === id);
   },
 }));

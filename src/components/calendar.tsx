@@ -8,9 +8,7 @@ const weekDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 const Calendar: React.FC = () => {
   const [currentMonth, setCurrentMonth] = useState(dayjs());
-
   const { events } = useEvent();
-
   const { openModal } = useModal();
 
   const startOfMonth = currentMonth.startOf("month");
@@ -22,23 +20,27 @@ const Calendar: React.FC = () => {
   const startDayOfPrevMonth =
     startOfPrevMonth.endOf("month").date() - startDayOfWeek + 1;
 
-  const prevMonthDays = Array.from(
-    { length: startDayOfWeek },
-    (_, i) => startDayOfPrevMonth + i
-  );
-  const totalDays = daysInMonth + prevMonthDays.length;
-  const totalDaysToShow = 35;
-  const nextMonthDaysCount = Math.max(0, totalDaysToShow - totalDays);
-  const nextMonthDays = Array.from(
-    { length: nextMonthDaysCount },
-    (_, i) => i + 1
+  const prevMonthDays = Array.from({ length: startDayOfWeek }, (_, i) =>
+    startOfPrevMonth.date(startDayOfPrevMonth + i).startOf("day")
   );
 
-  const days = [
-    ...prevMonthDays,
-    ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
-    ...nextMonthDays,
-  ];
+  const currentMonthDays = Array.from({ length: daysInMonth }, (_, i) =>
+    startOfMonth.date(i + 1).startOf("day")
+  );
+
+  const nextMonthDaysCount = Math.max(
+    0,
+    35 - (prevMonthDays.length + daysInMonth)
+  );
+  const nextMonthDays = Array.from({ length: nextMonthDaysCount }, (_, i) =>
+    startOfMonth
+      .add(1, "month")
+      .date(i + 1)
+      .startOf("day")
+  );
+
+  const days = [...prevMonthDays, ...currentMonthDays, ...nextMonthDays];
+
   const weeks = [];
   for (let i = 0; i < days.length; i += 7) {
     weeks.push(days.slice(i, i + 7));
@@ -74,8 +76,7 @@ const Calendar: React.FC = () => {
         ))}
         {weeks.map((week, weekIndex) => (
           <React.Fragment key={weekIndex}>
-            {week.map((day, dayIndex) => {
-              const date = currentMonth.date(day).startOf("day");
+            {week.map((date, dayIndex) => {
               const isToday = date.isSame(today, "day");
               const eventsForDay = events.filter((event) =>
                 dayjs(event.date).isSame(date, "day")
@@ -83,26 +84,28 @@ const Calendar: React.FC = () => {
               return (
                 <div
                   key={dayIndex}
-                  className={`p-4 relative border flex flex-col gap-y-4 border-gray-300 rounded-lg transition-colors duration-150 ease-in-out cursor-pointer hover:bg-blue-100 ${
-                    day === 0
+                  className={`p-2 md:p-3 lg:p-4 relative border flex flex-col gap-y-4 border-gray-300 rounded-lg transition-colors duration-150 ease-in-out cursor-pointer hover:bg-blue-100 ${
+                    date.month() !== currentMonth.month()
                       ? "text-gray-400"
                       : isToday
                       ? "bg-primary text-white hover:bg-primary/80"
                       : "bg-white"
                   }`}
-                  onClick={() =>
-                    openModal("day-details", { date: currentMonth.date(day) })
-                  }
+                  onClick={() => openModal("day-details", { date })}
                 >
                   <div
-                    className={`mx-auto flex items-center justify-center size-8 rounded-full ${
+                    className={`mx-auto flex items-center justify-center size-6 md:size-7 lg:size-8 rounded-full ${
                       eventsForDay.length > 0 &&
                       (isToday
                         ? "bg-white text-primary"
                         : "bg-primary text-white")
                     }`}
                   >
-                    {day !== 0 && <span className={`font-medium`}>{day}</span>}
+                    {date.date() !== 0 && (
+                      <span className={`font-medium text-sm lg:text-base`}>
+                        {date.date()}
+                      </span>
+                    )}
                   </div>
                 </div>
               );

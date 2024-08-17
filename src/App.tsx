@@ -1,7 +1,6 @@
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import HomePage from "./pages/home-page";
-import EventDetails from "./pages/event-details";
 import NotFound from "./pages/not-found";
 import RootProvider from "./components/providers/root-provider";
 
@@ -11,7 +10,7 @@ const App: React.FC = () => {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/event/:eventId" element={<EventDetails />} />
+          {/* <Route path="/event/:eventId" element={<EventDetails />} /> */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
