@@ -24,11 +24,13 @@ const EventItem: React.FC<{
   onEdit: () => void;
   onDelete: () => void;
 }> = ({ event, onEdit, onDelete }) => {
+  const { openModal } = useModal();
+
   return (
     <div className="border-b border-gray-300 py-2 flex justify-between px-1 lg:px-4 items-center">
       <div>
         <span
-          onClick={onEdit}
+          onClick={() => openModal("event-details", { eventId: event.id })}
           className="text-sm lg:text-base font-medium cursor-pointer hover:underline hover:underline-offset-4"
         >
           {event.title}

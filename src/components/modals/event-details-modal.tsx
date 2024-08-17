@@ -35,9 +35,13 @@ const EventDetailsModal = () => {
           </div>
           <div className="flex flex-col gap-y-1">
             <label className="font-semibold">Description</label>
-            <span className="p-3 rounded-md border border-primary text-sm">
-              {event?.description}
-            </span>
+            {event?.description ? (
+              <span className="p-3 rounded-md border border-primary text-sm">
+                {event?.description}
+              </span>
+            ) : (
+              <span className="text-sm">No Description</span>
+            )}
           </div>
         </div>
       </DialogContent>
